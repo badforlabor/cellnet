@@ -4,7 +4,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/davyxu/cellnet"
+	"github.com/badforlabor/cellnet"
 )
 
 type sessionMgr struct {

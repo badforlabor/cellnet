@@ -4,8 +4,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/davyxu/cellnet"
-	"github.com/davyxu/cellnet/proto/gamedef"
+	"github.com/badforlabor/cellnet"
+	"github.com/badforlabor/cellnet/proto/gamedef"
 )
 
 type socketConnector struct {

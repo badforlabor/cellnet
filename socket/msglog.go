@@ -3,7 +3,7 @@ package socket
 import (
 	"fmt"
 
-	"github.com/davyxu/cellnet"
+	"github.com/badforlabor/cellnet"
 
 	"github.com/golang/protobuf/proto"
 )
