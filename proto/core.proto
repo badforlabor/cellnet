@@ -69,4 +69,5 @@ message RemoteCallACK
 message TestEchoACK
 {
 	string Content = 1;
+	string Content2 = 2;
 }
