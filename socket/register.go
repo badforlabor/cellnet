@@ -31,7 +31,7 @@ func RegisterMessage(evd cellnet.EventDispatcher, msgName string, userHandler fu
 
 		if ev, ok := data.(*SessionEvent); ok {
 
-			rawMsg, err := cellnet.ParsePacket(ev.Packet, msgMeta.Type)
+			rawMsg, err := cellnet.ParsePacket1(ev.Packet, msgMeta.Type)
 
 			if err != nil {
 				log.Errorf("unmarshaling error: %v, raw: %v", err, ev.Packet)
@@ -46,3 +46,23 @@ func RegisterMessage(evd cellnet.EventDispatcher, msgName string, userHandler fu
 
 	return &RegisterMessageContext{MessageMeta: msgMeta, CallbackContext: ctx}
 }
+func NewRegisterMessage(evd cellnet.EventDispatcher, id uint32, userHandler func(interface{}, cellnet.Session))  {
+
+	evd.AddCallback(id, func(data interface{}) {
+
+		if ev, ok := data.(*SessionEvent); ok {
+
+			rawMsg, err := cellnet.ParsePacket(ev.Packet)
+
+			if err != nil {
+				log.Errorf("unmarshaling error: %v, raw: %v", err, ev.Packet)
+				return
+			}
+
+			userHandler(rawMsg, ev.Ses)
+
+		}
+
+	})
+}
+

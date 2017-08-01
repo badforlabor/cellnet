@@ -180,7 +180,7 @@ func newRequest(evd cellnet.EventDispatcher, args interface{}, callback interfac
 	req.replyType = funcType.In(0)
 	req.callback = reflect.ValueOf(callback)
 
-	pkt, _ := cellnet.BuildPacket(args)
+	pkt, _ := cellnet.BuildPacket1(args)
 
 	addCall(req)
 

@@ -17,7 +17,7 @@ type response struct {
 
 func (self *response) Feedback(msg interface{}) {
 
-	pkt, _ := cellnet.BuildPacket(msg)
+	pkt, _ := cellnet.BuildPacket1(msg)
 
 	self.ses.Send(&gamedef.RemoteCallACK{
 		MsgID:  pkt.MsgID,

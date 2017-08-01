@@ -44,6 +44,11 @@ func (self *ltvSession) Send(data interface{}) {
 
 	msgLog("send", self, pkt)
 
+	// 非法的协议
+	if pkt.MsgID == 0 || len(pkt.Data) == 0{
+		return
+	}
+
 	self.RawSend(pkt)
 }
 

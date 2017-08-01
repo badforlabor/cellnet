@@ -4,6 +4,8 @@ import (
 	"reflect"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/badforlabor/cellnet/proto/newprotocol"
+	"fmt"
 )
 
 // 普通封包
@@ -17,7 +19,7 @@ func (self Packet) ContextID() uint32 {
 }
 
 // 消息到封包
-func BuildPacket(data interface{}) (*Packet, *MessageMeta) {
+func BuildPacket1(data interface{}) (*Packet, *MessageMeta) {
 
 	msg := data.(proto.Message)
 
@@ -36,7 +38,7 @@ func BuildPacket(data interface{}) (*Packet, *MessageMeta) {
 }
 
 // 封包到消息
-func ParsePacket(pkt *Packet, msgType reflect.Type) (interface{}, error) {
+func ParsePacket1(pkt *Packet, msgType reflect.Type) (interface{}, error) {
 	// msgType 为ptr类型, new时需要非ptr型
 
 	rawMsg := reflect.New(msgType.Elem()).Interface()
@@ -47,5 +49,29 @@ func ParsePacket(pkt *Packet, msgType reflect.Type) (interface{}, error) {
 		return nil, err
 	}
 
+	return rawMsg, nil
+}
+
+func BuildPacket(data interface{}) (*Packet, *MessageMeta) {
+
+	pkg := &Packet{}
+
+	if _, ok := data.(newprotocol.BinaryProtocol); ok {
+		pkg.MsgID = newprotocol.GetProtocolID(data)
+		buffer := newprotocol.NewBinaryBuffer(nil)
+		(data.(newprotocol.BinaryProtocol)).WriteMsg(buffer)
+		pkg.Data = buffer.GetBytes()
+	} else {
+		fmt.Println("unsupport msg:", data)
+	}
+
+	return pkg, nil
+}
+func ParsePacket(pkt *Packet) (interface{}, error) {
+	rawMsg := newprotocol.NewProtocol(pkt.MsgID)
+	if rawMsg != nil {
+		buffer := newprotocol.NewBinaryBuffer(pkt.Data)
+		rawMsg.(newprotocol.BinaryProtocol).ReadMsg(buffer)
+	}
 	return rawMsg, nil
 }

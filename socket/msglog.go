@@ -46,7 +46,7 @@ func (self *MessageLogInfo) MsgString() string {
 		return fmt.Sprintf("%v", self.pkt.Data)
 	}
 
-	rawMsg, err := cellnet.ParsePacket(self.pkt, self.meta.Type)
+	rawMsg, err := cellnet.ParsePacket1(self.pkt, self.meta.Type)
 	if err != nil {
 		return err.Error()
 	}

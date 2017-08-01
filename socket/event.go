@@ -34,7 +34,7 @@ func NewSessionEvent(msgid uint32, s cellnet.Session, data []byte) *SessionEvent
 
 func newSessionEvent(msgid uint32, s cellnet.Session, msg interface{}) *SessionEvent {
 
-	pkt, _ := cellnet.BuildPacket(msg)
+	pkt, _ := cellnet.BuildPacket1(msg)
 
 	return &SessionEvent{
 		Packet: pkt,
