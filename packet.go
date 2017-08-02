@@ -3,9 +3,9 @@ package cellnet
 import (
 	"reflect"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/badforlabor/cellnet/proto/newprotocol"
 	"fmt"
+	"github.com/badforlabor/cellnet/proto/newprotocol"
+	"github.com/golang/protobuf/proto"
 )
 
 // 普通封包
@@ -56,6 +56,14 @@ func BuildPacket(data interface{}) (*Packet, *MessageMeta) {
 
 	pkg := &Packet{}
 
+	defer func() {
+		r := recover()
+		if r != nil {
+			pkg.MsgID = 0
+			pkg.Data = nil
+		}
+	}()
+
 	if _, ok := data.(newprotocol.BinaryProtocol); ok {
 		pkg.MsgID = newprotocol.GetProtocolID(data)
 		buffer := newprotocol.NewBinaryBuffer(nil)
@@ -68,10 +76,20 @@ func BuildPacket(data interface{}) (*Packet, *MessageMeta) {
 	return pkg, nil
 }
 func ParsePacket(pkt *Packet) (interface{}, error) {
+
+	var err error = nil
+
+	defer func() {
+		r := recover()
+		if r != nil {
+			err = r.(error)
+		}
+	}()
+
 	rawMsg := newprotocol.NewProtocol(pkt.MsgID)
 	if rawMsg != nil {
 		buffer := newprotocol.NewBinaryBuffer(pkt.Data)
 		rawMsg.(newprotocol.BinaryProtocol).ReadMsg(buffer)
 	}
-	return rawMsg, nil
+	return rawMsg, err
 }

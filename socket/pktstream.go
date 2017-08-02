@@ -9,11 +9,13 @@ import (
 	"net"
 	"sync"
 
+	"fmt"
 	"github.com/badforlabor/cellnet"
 )
 
 const (
-	PackageHeaderSize = 8 // MsgID(uint32) + Ser(uint16) + Size(uint16)
+	PackageHeaderSize = 8     // MsgID(uint32) + Ser(uint16) + Size(uint16)
+	MaxProtocolSize   = 65535 // 包最大64k
 )
 
 // 封包流
@@ -80,6 +82,9 @@ func (self *ltvStream) Read() (p *cellnet.Packet, err error) {
 	if self.maxPacketSize > 0 && int(fullsize) > self.maxPacketSize {
 		return nil, packageTooBig
 	}
+	if fullsize > MaxProtocolSize {
+		return nil, packageTooBig
+	}
 
 	// 序列号不匹配
 	if self.recvser != ser {
@@ -96,6 +101,8 @@ func (self *ltvStream) Read() (p *cellnet.Packet, err error) {
 	if _, err = io.ReadFull(self.conn, p.Data); err != nil {
 		return nil, err
 	}
+
+	fmt.Println("recv:", p.MsgID, p.Data)
 
 	// 增加序列号值
 	self.recvser++
