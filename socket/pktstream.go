@@ -5,12 +5,10 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"github.com/badforlabor/cellnet"
 	"io"
 	"net"
 	"sync"
-
-	"fmt"
-	"github.com/badforlabor/cellnet"
 )
 
 const (
@@ -102,7 +100,7 @@ func (self *ltvStream) Read() (p *cellnet.Packet, err error) {
 		return nil, err
 	}
 
-	fmt.Println("recv:", p.MsgID, p.Data)
+	// fmt.Println("recv:", p.MsgID, p.Data)
 
 	// 增加序列号值
 	self.recvser++

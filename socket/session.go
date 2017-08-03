@@ -126,7 +126,7 @@ func (self *ltvSession) recvThread(eq cellnet.EventQueue) {
 
 		if err != nil {
 
-			ev := newSessionEvent(Event_SessionClosed, self, &gamedef.SessionClosed{Reason: err.Error()})
+			ev := NewSessionEvent(Event_SessionClosed, self, nil)
 
 			msgLog("recv", self, ev.Packet)
 
@@ -139,12 +139,16 @@ func (self *ltvSession) recvThread(eq cellnet.EventQueue) {
 
 		msgLog("recv", self, pkt)
 
-		// 逻辑封包
-		eq.Post(self.p, &SessionEvent{
+		evt := &SessionEvent{
 			Packet: pkt,
 			Ses:    self,
-		})
-
+		}
+		// 提前解析包，如果解析成功了，那么才放入消息队列
+		// 否则，直接抛弃“废包”
+		if evt.PreParsePacket() {
+			// 逻辑封包
+			eq.Post(self.p, evt)
+		}
 	}
 
 	if self.needNotifyWrite {

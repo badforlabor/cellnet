@@ -5,14 +5,15 @@ import (
 
 	"github.com/badforlabor/cellnet"
 	_ "github.com/badforlabor/cellnet/proto/gamedef"
+	"math"
 )
 
 var (
-	Event_SessionConnected     = uint32(cellnet.MessageMetaByName("gamedef.SessionConnected").ID)
-	Event_SessionClosed        = uint32(cellnet.MessageMetaByName("gamedef.SessionClosed").ID)
-	Event_SessionAccepted      = uint32(cellnet.MessageMetaByName("gamedef.SessionAccepted").ID)
-	Event_SessionAcceptFailed  = uint32(cellnet.MessageMetaByName("gamedef.SessionAcceptFailed").ID)
-	Event_SessionConnectFailed = uint32(cellnet.MessageMetaByName("gamedef.SessionConnectFailed").ID)
+	Event_SessionConnected     = uint32(math.MaxUint32 - 1)
+	Event_SessionClosed        = uint32(math.MaxUint32 - 2)
+	Event_SessionAccepted      = uint32(math.MaxUint32 - 3)
+	Event_SessionAcceptFailed  = uint32(math.MaxUint32 - 4)
+	Event_SessionConnectFailed = uint32(math.MaxUint32 - 5)
 )
 
 // 会话事件

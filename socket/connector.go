@@ -67,7 +67,7 @@ func (self *socketConnector) connect(address string) {
 			// 没重连就退出
 			if self.autoReconnectSec == 0 {
 
-				self.Post(self, newSessionEvent(Event_SessionConnectFailed, nil, &gamedef.SessionConnectFailed{Reason: err.Error()}))
+				self.Post(self, NewSessionEvent(Event_SessionConnectFailed, nil, nil))
 				break
 			}
 

@@ -39,7 +39,7 @@ func (self *socketAcceptor) Start(address string) cellnet.Peer {
 
 			if err != nil {
 				log.Errorf("#accept failed(%s) %v", self.name, err.Error())
-				self.Post(self, newSessionEvent(Event_SessionAcceptFailed, nil, &gamedef.SessionAcceptFailed{Reason: err.Error()}))
+				self.Post(self, NewSessionEvent(Event_SessionAcceptFailed, nil, nil))
 				break
 			}
 

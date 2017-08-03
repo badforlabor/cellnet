@@ -13,7 +13,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"time"
-	"github.com/badforlabor/cellnet/proto/newprotocol"
 )
 /*
 	第三方包：
@@ -34,6 +33,8 @@ import (
 
 func main() {
 
+	cellnet.SetProtocoloProcessor(myProtocolProcessor{})
+
 	flag.Parse()
 
 	// 创建一个log目录，与exe文件同级别
@@ -51,12 +52,12 @@ func main() {
 
 	evd := socket.NewAcceptor(queue).Start("127.0.0.1:7201")
 
-	socket.NewRegisterMessage(evd, newprotocol.PID_TestEchoACK, func(content interface{}, ses cellnet.Session) {
-		msg := content.(*newprotocol.TestEchoACK)
+	socket.NewRegisterMessage(evd, PID_TestEchoACK, func(content interface{}, ses cellnet.Session) {
+		msg := content.(*TestEchoACK)
 
 		log.Infoln("server recv:", msg.Content)
 
-		ses.Send(&newprotocol.TestEchoACK{
+		ses.Send(&TestEchoACK{
 			Content: msg.Content,
 		})
 
@@ -65,7 +66,7 @@ func main() {
 	time.Sleep(3 * time.Second)
 	queue.StartLoop()
 
-	fmt.Println("1111111111111111")
+	fmt.Println("start client.")
 	client()
 
 	c := make(chan os.Signal, 1)
@@ -105,22 +106,23 @@ func client() {
 
 	evd := socket.NewConnector(queue).Start("127.0.0.1:7201")
 
-	socket.NewRegisterMessage(evd, newprotocol.PID_TestEchoACK, func(content interface{}, ses cellnet.Session) {
-		msg := content.(*newprotocol.TestEchoACK)
+	socket.NewRegisterMessage(evd, PID_TestEchoACK, func(content interface{}, ses cellnet.Session) {
+		msg := content.(*TestEchoACK)
 
 		log.Infoln("client recv:", msg.Content)
 	})
 
 
-	socket.NewRegisterMessage(evd, socket.Event_SessionConnected, func(content interface{}, ses cellnet.Session) {
+	socket.RegisterSysMessage(evd, socket.Event_SessionConnected, func(content interface{}, ses cellnet.Session) {
 
-		ses.Send(&newprotocol.TestEchoACK{
-			Content: "hello",
+		fmt.Println("client send:", "hello11111111")
+		ses.Send(&TestEchoACK{
+			Content: "hello11111111",
 		})
 
 	})
 
-	socket.NewRegisterMessage(evd,  socket.Event_SessionConnectFailed, func(content interface{}, ses cellnet.Session) {
+	socket.RegisterSysMessage(evd,  socket.Event_SessionConnectFailed, func(content interface{}, ses cellnet.Session) {
 
 		msg := content.(*gamedef.SessionConnectFailed)
 

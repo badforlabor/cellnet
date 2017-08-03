@@ -55,7 +55,7 @@ func (self *MessageLogInfo) MsgString() string {
 }
 
 // 是否启用消息日志
-var EnableMessageLog bool = true
+var EnableMessageLog bool = false
 
 func msgLog(dir string, ses cellnet.Session, pkt *cellnet.Packet) {
 

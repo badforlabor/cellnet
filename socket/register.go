@@ -17,7 +17,7 @@ type RegisterMessageContext struct {
 	*cellnet.CallbackContext
 }
 
-// 注册连接消息
+// [废弃] 注册连接消息
 func RegisterMessage(evd cellnet.EventDispatcher, msgName string, userHandler func(interface{}, cellnet.Session)) *RegisterMessageContext {
 
 	msgMeta := cellnet.MessageMetaByName(msgName)
@@ -46,6 +46,7 @@ func RegisterMessage(evd cellnet.EventDispatcher, msgName string, userHandler fu
 
 	return &RegisterMessageContext{MessageMeta: msgMeta, CallbackContext: ctx}
 }
+// 注册自定义协议
 func NewRegisterMessage(evd cellnet.EventDispatcher, id uint32, userHandler func(interface{}, cellnet.Session))  {
 
 	evd.AddCallback(id, func(data interface{}) {
@@ -60,6 +61,19 @@ func NewRegisterMessage(evd cellnet.EventDispatcher, id uint32, userHandler func
 			}
 
 			userHandler(rawMsg, ev.Ses)
+
+		}
+
+	})
+}
+// 注册系统消息：比如Event_SessionConnected，Event_SessionClosed
+func RegisterSysMessage(evd cellnet.EventDispatcher, id uint32, userHandler func(interface{}, cellnet.Session))  {
+
+	evd.AddCallback(id, func(data interface{}) {
+
+		if ev, ok := data.(*SessionEvent); ok {
+
+			userHandler(nil, ev.Ses)
 
 		}
 

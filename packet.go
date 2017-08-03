@@ -8,10 +8,26 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
+// 协议拆包封包
+type DefaultProtocolProcessor struct {
+}
+func (p DefaultProtocolProcessor) NewProtocol(msgid uint32) (interface{}){
+	return newprotocol.NewProtocol(msgid)
+}
+func (p DefaultProtocolProcessor) GetProtocolID(proto interface{}) uint32 {
+	return newprotocol.GetProtocolID(proto)
+}
+var protocolProcessor newprotocol.BinaryProtocolProcessor = DefaultProtocolProcessor{}
+func SetProtocoloProcessor(p newprotocol.BinaryProtocolProcessor){
+	protocolProcessor = p
+}
+
+
 // 普通封包
 type Packet struct {
 	MsgID uint32 // 消息ID
 	Data  []byte
+	rawMsg newprotocol.BinaryProtocol
 }
 
 func (self Packet) ContextID() uint32 {
@@ -65,7 +81,7 @@ func BuildPacket(data interface{}) (*Packet, *MessageMeta) {
 	}()
 
 	if _, ok := data.(newprotocol.BinaryProtocol); ok {
-		pkg.MsgID = newprotocol.GetProtocolID(data)
+		pkg.MsgID = protocolProcessor.GetProtocolID(data)
 		buffer := newprotocol.NewBinaryBuffer(nil)
 		(data.(newprotocol.BinaryProtocol)).WriteMsg(buffer)
 		pkg.Data = buffer.GetBytes()
@@ -77,19 +93,28 @@ func BuildPacket(data interface{}) (*Packet, *MessageMeta) {
 }
 func ParsePacket(pkt *Packet) (interface{}, error) {
 
+	return pkt.rawMsg, nil
+}
+
+func (self *Packet)PreParsePacket() bool {
+
 	var err error = nil
 
 	defer func() {
 		r := recover()
 		if r != nil {
 			err = r.(error)
+			self.rawMsg = nil
 		}
+		self.Data = nil
 	}()
 
-	rawMsg := newprotocol.NewProtocol(pkt.MsgID)
+	rawMsg := protocolProcessor.NewProtocol(self.MsgID)
 	if rawMsg != nil {
-		buffer := newprotocol.NewBinaryBuffer(pkt.Data)
+		buffer := newprotocol.NewBinaryBuffer(self.Data)
 		rawMsg.(newprotocol.BinaryProtocol).ReadMsg(buffer)
 	}
-	return rawMsg, err
+	self.rawMsg = rawMsg.(newprotocol.BinaryProtocol)
+
+	return self.rawMsg != nil
 }
