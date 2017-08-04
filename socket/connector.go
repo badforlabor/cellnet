@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/badforlabor/cellnet"
-	"github.com/badforlabor/cellnet/proto/gamedef"
 )
 
 type socketConnector struct {

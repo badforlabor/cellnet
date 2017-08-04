@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	"github.com/badforlabor/cellnet"
-	"github.com/badforlabor/cellnet/proto/gamedef"
 )
 
 type closeWritePacket struct {
